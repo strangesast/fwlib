@@ -9,21 +9,16 @@ version=1.0.5
 platform=linux
 arch=$(arch)
 base="$(dirname "$(realpath "$0")")"
-libdir=/lib
-if [ "$arch" = "x86_64" ] || [ "$arch" = "x86" ]; then
-  arch=x86
-  libdir=/lib
-  libinstall
+libdir=/usr/local/lib
+if [ "$arch" = "x86_64" ]; then
   arch=x64
-  libdir=/lib64
   libinstall
 elif [ "$arch" = "armv7l" ]; then
   arch=armv7
-  libdir=/lib
   libinstall
 else
-  echo "unsupported arch"
-  exit 1
+  arch=x86
+  libinstall
 fi
-cp fwlib32.h /usr/include/
+cp "$base/fwlib32.h" /usr/include/
 ldconfig
