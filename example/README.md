@@ -9,3 +9,7 @@ From the `example/` directory: `docker run --rm --network=host -it $(docker buil
 1. `mkdir build && cd build`  
 2. `cmake ..`  
 3. `make`  
+
+The example is configured for 32bit compilation on x64 systems. More work is 
+required for CMake to detect the environment and configure itself properly on 
+arm, for example.

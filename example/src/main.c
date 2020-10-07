@@ -36,15 +36,15 @@ int main() {
     return 1;
   }
 
-  if (sizeof(long) == 4) {
-    sprintf(cncID, "%08lx-%08lx-%08lx-%08lx", cncIDs[0] & 0xffffffff,
-            cncIDs[1] & 0xffffffff, cncIDs[2] & 0xffffffff,
-            cncIDs[3] & 0xffffffff);
-  } else {
-    sprintf(cncID, "%08lx-%08lx-%08lx-%08lx", cncIDs[0] & 0xffffffff,
-            cncIDs[0] >> 32 & 0xffffffff, cncIDs[1] & 0xffffffff,
-            cncIDs[1] >> 32 & 0xffffffff);
-  }
+#if __SIZEOF_LONG__ == 4
+  sprintf(cncID, "%08lx-%08lx-%08lx-%08lx", cncIDs[0] & 0xffffffff,
+          cncIDs[1] & 0xffffffff, cncIDs[2] & 0xffffffff,
+          cncIDs[3] & 0xffffffff);
+#else
+  sprintf(cncID, "%08lx-%08lx-%08lx-%08lx", cncIDs[0] & 0xffffffff,
+          cncIDs[0] >> 32 & 0xffffffff, cncIDs[1] & 0xffffffff,
+          cncIDs[1] >> 32 & 0xffffffff);
+#endif
   printf("machine id: %s\n", cncID);
 
   exit(EXIT_SUCCESS);
