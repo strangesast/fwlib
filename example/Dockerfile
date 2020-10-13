@@ -1,14 +1,9 @@
-from debian:buster-slim as base
-
-workdir /tmp
-copy install.sh fwlib32.h libfwlib32* example/extra-deps.sh ./
-run ./install.sh && ./extra-deps.sh
+from fwlib as base
 
 from base as builder
 
-run apt-get update && apt-get install -y \
-  build-essential \
-  cmake
+copy build-deps.sh /tmp/
+run /tmp/build-deps.sh
 
 workdir /usr/src/app
 

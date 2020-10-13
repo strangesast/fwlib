@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  base:
+    image: fwlib
+    build:
+      context: .
+      dockerfile: i386.Dockerfile
+  fwlib:
+    image: fwlib-test
+    network_mode: host
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    depends_on:
+      - base

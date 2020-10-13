@@ -1,5 +1,6 @@
-from debian:buster-slim
+from debian:stretch-slim
 
-copy . .
+workdir /tmp
+copy libfwlib32* fwlib32.h install.sh ./
 
 run ./install.sh
