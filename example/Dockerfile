@@ -1,4 +1,4 @@
-from fwlib as base
+from strangesast/fwlib as base
 
 from base as builder
 
