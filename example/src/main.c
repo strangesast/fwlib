@@ -106,8 +106,9 @@ int main() {
   clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
   tt = (t1.tv_sec - t0.tv_sec) * 1000000 + (t1.tv_nsec - t0.tv_nsec) / 1000;
 
-  printf("%s\n", prog);
+  // printf("%s\n", prog);
   printf("(%ld)\n", tt);
+  free(prog);
 
   ret = cnc_upend4(libh);
   if (ret != EW_OK) {
@@ -115,6 +116,15 @@ int main() {
     exit(EXIT_FAILURE);
     return 1;
   }
+
+  IODBPSD param;
+
+  if (cnc_rdparam(libh, 6711, ALL_AXES, 8, &param) != EW_OK) {
+    fprintf(stderr, "Failed to read part parameter!\n");
+    return 1;
+  }
+
+  printf("part count: %ld\n", param.u.ldata);
 
   exit(EXIT_SUCCESS);
 }
