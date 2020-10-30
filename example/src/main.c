@@ -9,8 +9,6 @@
 
 // #include "../../fwlib32.h"
 #include "fwlib32.h"
-#define MACHINE_IP "127.0.0.1"
-#define MACHINE_PORT 8193
 
 unsigned short libh;
 
@@ -20,12 +18,31 @@ void cleanup() {
   cnc_exitprocess();
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  char ip[100] = "127.0.0.1";
+  int port = 8193;
   unsigned long cncIDs[4];
   char cncID[36];
   short ret;
   unsigned long tt;
   struct timespec t0, t1;
+
+  if (argc > 1) {
+    if (strlen(argv[1]) >= sizeof(ip)) {
+      printf("ip too long: %s\n", argv[1]);
+      exit(EXIT_FAILURE);
+      return 1;
+    }
+    strcpy(ip, argv[1]);
+  }
+
+  if (argc > 2) {
+    int tmp;
+    tmp = atoi(argv[2]);
+    if (tmp > 0 && tmp < 65535) {
+      port = tmp;
+    }
+  }
 
   if (cnc_startupprocess(0, "focas.log") != EW_OK) {
     fprintf(stderr, "Failed to create required log file!\n");
@@ -33,8 +50,8 @@ int main() {
     return 1;
   }
 
-  printf("connecting to machine at %s:%d...\n", MACHINE_IP, MACHINE_PORT);
-  if (cnc_allclibhndl3(MACHINE_IP, MACHINE_PORT, 10, &libh) != EW_OK) {
+  printf("connecting to machine at %s:%d...\n", ip, port);
+  if (cnc_allclibhndl3(ip, port, 10, &libh) != EW_OK) {
     fprintf(stderr, "Failed to connect to cnc!\n");
     exit(EXIT_FAILURE);
     return 1;
@@ -64,7 +81,7 @@ int main() {
     exit(EXIT_FAILURE);
     return 1;
   }
-  printf("program path: %s\n", program_path);
+  printf("current program path: %s\n", program_path);
 
   char buf[2048];
   long chunk = 1280;  // must be multiple of 256
@@ -79,6 +96,8 @@ int main() {
 
   if (ret != EW_OK) {
     fprintf(stderr, "upstart4 failed\n");
+    exit(EXIT_FAILURE);
+    return 1;
   }
 
   do {
@@ -107,7 +126,8 @@ int main() {
   tt = (t1.tv_sec - t0.tv_sec) * 1000000 + (t1.tv_nsec - t0.tv_nsec) / 1000;
 
   // printf("%s\n", prog);
-  printf("(%ld)\n", tt);
+  printf("program read took %.2fs (%ld bytes)\n", (double)tt / 1e6,
+         strlen(prog));
   free(prog);
 
   ret = cnc_upend4(libh);
