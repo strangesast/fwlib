@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "fwlib32.h"
-#define MACHINE_IP "127.0.0.1"
-#define MACHINE_PORT 8193
 
 unsigned short libh;
 
@@ -12,9 +11,28 @@ void cleanup() {
   cnc_exitprocess();
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  char ip[100] = "127.0.0.1";
+  int port = 8193;
   unsigned long cncIDs[4];
   char cncID[36];
+
+  if (argc > 1) {
+    if (strlen(argv[1]) >= sizeof(ip)) {
+      printf("ip too long: %s\n", argv[1]);
+      exit(EXIT_FAILURE);
+      return 1;
+    }
+    strcpy(ip, argv[1]);
+  }
+
+  if (argc > 2) {
+    int tmp;
+    tmp = atoi(argv[2]);
+    if (tmp > 0 && tmp < 65535) {
+      port = tmp;
+    }
+  }
 
   if (cnc_startupprocess(0, "focas.log") != EW_OK) {
     fprintf(stderr, "Failed to create required log file!\n");
@@ -22,8 +40,8 @@ int main() {
     return 1;
   }
 
-  printf("connecting to machine at %s:%d...\n", MACHINE_IP, MACHINE_PORT);
-  if (cnc_allclibhndl3(MACHINE_IP, MACHINE_PORT, 10, &libh) != EW_OK) {
+  printf("connecting to machine at %s:%d...\n", ip, port);
+  if (cnc_allclibhndl3(ip, port, 10, &libh) != EW_OK) {
     fprintf(stderr, "Failed to connect to cnc!\n");
     exit(EXIT_FAILURE);
     return 1;
