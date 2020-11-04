@@ -12,7 +12,8 @@ copy example/ .
 run mkdir build && \
   cd build && \
   cmake .. && \
-  make
+  make && \
+  make test
 
 from base
 

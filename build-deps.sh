@@ -9,7 +9,8 @@ if [ "$_set" = true ] && [ "$TARGETPLATFORM" = "aarch64" ] || [ "$_arch" = "aarc
   apt-get install -y \
     cmake \
     gcc-arm-linux-gnueabihf \
-    g++-arm-linux-gnueabihf
+    g++-arm-linux-gnueabihf \
+    libconfig-dev
   update-alternatives --remove-all cc
   update-alternatives --remove-all g++
   update-alternatives --install /usr/bin/cc cc /usr/bin/arm-linux-gnueabihf-gcc 50
@@ -19,16 +20,19 @@ elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$_arch" =
   apt-get install -y \
     cmake \
     gcc-multilib \
-    g++-multilib
+    g++-multilib \
+    libconfig-dev
 
 elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/arm/v7" ] || [ "$_arch" = "armhf" ] || [ "$_arch" = "armv7l" ]; then
   apt-get install -y \
     cmake \
-    build-essential
+    build-essential \
+    libconfig-dev
 
 else
   apt-get install -y \
     cmake \
-    build-essential
+    build-essential \
+    libconfig-dev
 
 fi
