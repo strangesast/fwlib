@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "./config.c"
 #include "fwlib32.h"
 
 unsigned short libh;
@@ -12,26 +14,16 @@ void cleanup() {
 }
 
 int main(int argc, char *argv[]) {
-  char ip[100] = "127.0.0.1";
-  int port = 8193;
   unsigned long cncIDs[4];
   char cncID[36];
+  Config conf;
 
-  if (argc > 1) {
-    if (strlen(argv[1]) >= sizeof(ip)) {
-      printf("ip too long: %s\n", argv[1]);
-      exit(EXIT_FAILURE);
-      return 1;
-    }
-    strcpy(ip, argv[1]);
-  }
-
-  if (argc > 2) {
-    int tmp;
-    tmp = atoi(argv[2]);
-    if (tmp > 0 && tmp < 65535) {
-      port = tmp;
-    }
+  if (read_config(argc, argv, &conf)) {
+    fprintf(
+        stderr,
+        "%s --config=<path_to_config> --port=<device port> --ip=<device ip>",
+        argv[0]);
+    return 1;
   }
 
   if (cnc_startupprocess(0, "focas.log") != EW_OK) {
@@ -40,8 +32,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("connecting to machine at %s:%d...\n", ip, port);
-  if (cnc_allclibhndl3(ip, port, 10, &libh) != EW_OK) {
+  printf("connecting to machine at %s:%d...\n", conf.ip, conf.port);
+  if (cnc_allclibhndl3(conf.ip, conf.port, 10, &libh) != EW_OK) {
     fprintf(stderr, "Failed to connect to cnc!\n");
     exit(EXIT_FAILURE);
     return 1;
