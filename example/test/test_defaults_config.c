@@ -5,7 +5,6 @@
 #include "../src/config.c"
 
 int main(int argc, char *argv[]) {
-  int ret;
   Config conf = {.ip = "0.0.0.0", .port = 1234};
 
   if (strcmp(conf.ip, "0.0.0.0") != 0) {
@@ -18,11 +17,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  ret = set_config_defaults(&conf);
-  if (ret != 0) {
-    fprintf(stderr, "read_arg_config failed!\n");
-    exit(1);
-  }
+  conf = default_config;
 
   if (strcmp(conf.ip, "127.0.0.1") != 0) {
     fprintf(stderr, "unexpected device ip \"%s\"\n", conf.ip);

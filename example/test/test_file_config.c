@@ -26,12 +26,12 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if (strcmp(conf.ip, "127.0.0.1") != 0) {
+  if (strcmp(conf.ip, "9.8.7.6") != 0) {
     fprintf(stderr, "unexpected device ip \"%s\"\n", conf.ip);
     exit(1);
   }
 
-  if (conf.port != 8193) {
+  if (conf.port != 9876) {
     fprintf(stderr, "unexpected device port \"%d\"\n", conf.port);
     exit(1);
   }

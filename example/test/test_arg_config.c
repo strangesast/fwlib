@@ -4,36 +4,33 @@
 
 #include "../src/config.c"
 
-int add(int a, int b) { return a + b; }
+static Config INIT_VALUE = {.ip = "1.2.3.4", .port = 1234};
 
 int main(int argc, char *argv[]) {
-  char *test_args[] = {"test_arg_config", "--port=8193", "--ip=127.0.0.1"};
   int ret;
-  Config conf = {.ip = "0.0.0.0", .port = 1234};
+  Config conf = INIT_VALUE;
 
-  if (strcmp(conf.ip, "0.0.0.0") != 0) {
-    fprintf(stderr, "unexpected null value for deviceIP\n");
+  if (strcmp(conf.ip, "1.2.3.4") != 0 || conf.port != 1234) {
+    fprintf(stderr, "unexpected test init values\n");
     exit(1);
   }
 
-  if (conf.port != 1234) {
-    fprintf(stderr, "unexpected null value for devicePort\n");
+  // test valid args
+  optind = 1;  // reset global arg index
+  char *test_args_1[] = {"test_arg_config", "--port=2345", "--ip=2.3.4.5"};
+  if ((ret = read_arg_config(3, test_args_1, &conf)) ||
+      strcmp(conf.ip, "2.3.4.5") != 0 || conf.port != 2345) {
+    fprintf(stderr, "read_arg_config 1 failed! (%d)\n", ret);
     exit(1);
   }
 
-  ret = read_arg_config(3, test_args, &conf);
-  if (ret != 0) {
-    fprintf(stderr, "read_arg_config failed!\n");
-    exit(1);
-  }
-
-  if (strcmp(conf.ip, "127.0.0.1") != 0) {
-    fprintf(stderr, "unexpected device ip \"%s\"\n", conf.ip);
-    exit(1);
-  }
-
-  if (conf.port != 8193) {
-    fprintf(stderr, "unexpected device port \"%d\"\n", conf.port);
+  // test invalid args
+  optind = 1;  // reset global arg index
+  conf = INIT_VALUE;
+  char *test_args_2[] = {"test_arg_config", "--port", "--ip", "2.3.4.5"};
+  if (read_arg_config(4, test_args_2, &conf) == 0 ||
+      strcmp(conf.ip, INIT_VALUE.ip) != 0 || conf.port != INIT_VALUE.port) {
+    fprintf(stderr, "read_arg_config 2 failed! (%d)\n", ret);
     exit(1);
   }
 
