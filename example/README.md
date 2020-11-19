@@ -1,5 +1,9 @@
 # Fanuc fwlib example
-An example that connects to a machine specified by MACHINE_IP & MACHINE_PORT in `main.c`
+An example that connects to a machine specified by configuration options (file / env / arg)  
+Usage (all args are optional):  
+```
+./bin/fanuc_example --config=<path_to_config> --port=<device port> --ip=<device ip>
+```
 
 # Docker Instructions
 From the `example/` directory: `docker run --rm --network=host -it $(docker build -f Dockerfile ..)`
@@ -14,3 +18,6 @@ From the `example/` directory: `docker run --rm --network=host -it $(docker buil
 The example is configured for 32bit compilation on x64 systems. More work is
 required for CMake to detect the environment and configure itself properly on
 arm, for example.
+
+# Development / Debug
+Copy `compile_commands.json` from build dir to use with IDE

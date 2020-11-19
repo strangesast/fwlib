@@ -11,7 +11,7 @@ static struct option options[] = {{"ip", required_argument, NULL, 'h'},
                                   {"config", required_argument, NULL, 'c'},
                                   {NULL, 0, NULL, 0}};
 
-const Config default_config = {.ip = "127.0.0.1", .port = 8193};
+const Config default_config = {"127.0.0.1", 8193};
 
 int read_arg_config(int argc, char *argv[], Config *conf) {
   int c;
@@ -47,7 +47,7 @@ int read_arg_config(int argc, char *argv[], Config *conf) {
         return 1;
     }
   }
-  printf("START %d\n", c);
+
   if (ip_flag) {
     strncpy(conf->ip, ip, 100);
   }

@@ -4,7 +4,6 @@
 
 #include "./config.c"
 #include "fwlib32.h"
-//#include "../../fwlib32.h"
 
 unsigned short libh;
 
