@@ -1,2 +1,4 @@
 build/
 extern/
+.clangd/
+compile_commands.json
