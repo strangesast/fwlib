@@ -1,6 +1,6 @@
 #include "./config.h"
 
-/* unclear why this is required */
+/* unclear why this is required (else "error: overloaded function with no contextual type information")*/
 #ifndef TESTING
 #include "fwlib32.h"
 #else
