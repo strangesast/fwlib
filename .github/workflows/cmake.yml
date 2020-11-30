@@ -13,9 +13,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       
-    - name: Submodules
+    - name: Submodules & Install Fwlib
       run: |
         git submodule update --init --recursive
+        cp libfwlib32-linux-x64.so /usr/local/lib/libfwlib32.so
+        ldconfig
       
     - name: Create Build Environment
       shell: bash
