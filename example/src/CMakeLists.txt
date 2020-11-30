@@ -26,9 +26,9 @@ else()
   set_target_properties(fwlib32 PROPERTIES
     IMPORTED_LOCATION "${FWLIB}"
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/../")
-  if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set_target_properties(fanuc_example PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-  endif()
+  #if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  #  set_target_properties(fanuc_example PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+  #endif()
   list(APPEND DEPS "m" "pthread")
 endif()
 

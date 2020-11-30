@@ -20,10 +20,8 @@ if [ "$_set" = true ] && [ "$TARGETPLATFORM" = "aarch64" ] || [ "$_arch" = "aarc
   arch=armv7
 
 elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$_arch" = "x86_64" ]; then
-  dpkg --add-architecture i386 && apt-get update && apt-get install -y \
-    lib32stdc++6 \
-    libconfig-dev:i386
-  arch=x86
+  apt-get update && apt-get install -y libconfig-dev
+  arch=x64
 
 elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/arm/v7" ] || [ "$_arch" = "armhf" ] || [ "$_arch" = "armv7l" ]; then
   arch=armv7

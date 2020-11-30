@@ -32,8 +32,8 @@ int retrieve_id(Config *conf, char *cnc_id) {
     goto cleanup;
   }
 
-  snprintf(cnc_id, 40, "%08x-%08x-%08x-%08x", cnc_ids[0], cnc_ids[1], cnc_ids[2],
-          cnc_ids[3]);
+  snprintf(cnc_id, 40, "%08x-%08x-%08x-%08x", cnc_ids[0], cnc_ids[1],
+           cnc_ids[2], cnc_ids[3]);
 
 cleanup:
   if (allocated && cnc_freelibhndl(libh) != EW_OK)
