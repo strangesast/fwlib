@@ -10,20 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-
+    - name: Checkout
+      uses: actions/checkout@v2
+      
     - name: Create Build Environment
-      run: cmake -E make_directory $GITHUB_WORKSPACE/example/build
+      shell: bash
+      run: cmake -E make_directory ${{runner.workspace}}/example/build
     
     - name: Configure CMake
-      working-directory: $GITHUB_WORKSPACE/example/build
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      working-directory: ${{runner.workspace}}/example/build
+      shell: bash
+      run: cmake $GITHUB_WORKSPACE/example -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
-      working-directory: $GITHUB_WORKSPACE/example/build
+      working-directory: ${{runner.workspace}}/example/build
+      shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Test
-      working-directory: $GITHUB_WORKSPACE/example/build
+      working-directory: ${{runner.workspace}}/example/build
       shell: bash
       run: ctest -C $BUILD_TYPE -V
