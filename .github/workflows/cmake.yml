@@ -16,8 +16,8 @@ jobs:
     - name: Submodules & Install Fwlib
       run: |
         git submodule update --init --recursive
-        cp libfwlib32-linux-x64.so.1.0.5 /usr/local/lib/libfwlib32.so
-        ldconfig
+        sudo cp libfwlib32-linux-x64.so.1.0.5 /usr/local/lib/libfwlib32.so
+        sudo ldconfig
       
     - name: Create Build Environment
       shell: bash
