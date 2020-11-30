@@ -13,9 +13,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       
-    - name: Submodules & Install Fwlib
+    - name: Submodules & Dependencies
       run: |
         git submodule update --init --recursive
+        sudo apt update && sudo apt install -y libconfig-dev
         sudo cp libfwlib32-linux-x64.so.1.0.5 /usr/local/lib/libfwlib32.so
         sudo ldconfig
       
