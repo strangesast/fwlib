@@ -3,9 +3,10 @@
 
 #include "./config.h"
 
-/* unclear why this is required (else "error: overloaded function with no contextual type information")*/
+/* unclear why this is required (else "error: overloaded function with no
+ * contextual type information")*/
 #ifndef TESTING
-#include "../../fwlib32.h"
+#include "fwlib32.h"
 #else
 #define EW_OK 0
 #ifndef _WIN32

@@ -1,0 +1,39 @@
+name: CMake
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Submodules & Dependencies
+      run: |
+        git submodule update --init --recursive
+        sudo apt update && sudo apt install -y libconfig-dev
+        sudo cp libfwlib32-linux-x64.so.1.0.5 /usr/local/lib/libfwlib32.so
+        sudo ldconfig
+
+    - name: Create Build Environment
+      shell: bash
+      run: cmake -E make_directory ${{runner.workspace}}/example/build
+
+    - name: Configure CMake
+      working-directory: ${{runner.workspace}}/example/build
+      shell: bash
+      run: cmake $GITHUB_WORKSPACE/example -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/example/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+
+    - name: Test
+      working-directory: ${{runner.workspace}}/example/build
+      shell: bash
+      run: ctest -C $BUILD_TYPE -V
