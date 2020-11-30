@@ -15,6 +15,12 @@ From the `example/` directory: `docker run --rm --network=host -it $(docker buil
 3. `make`
 4. `make test`
 
+# Windows
+Compiling with Fwlib32 instead of Fwlib64 requires passing `-A Win32` to cmake.
+1. `mkdir build` and `cd build`  
+2. `cmake -A Win32 ..`  
+3. `cmake --build .`  
+
 The example is configured for 32bit compilation on x64 systems. More work is
 required for CMake to detect the environment and configure itself properly on
 arm, for example.

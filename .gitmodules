@@ -1,6 +1,9 @@
 [submodule "example/extern/googletest"]
 	path = example/extern/googletest
 	url = https://github.com/google/googletest.git
+[submodule "example/extern/libconfig"]
+	path = example/extern/libconfig
+	url = https://github.com/hyperrealm/libconfig.git
 [submodule "example/extern/fff"]
 	path = example/extern/fff
 	url = https://github.com/meekrosoft/fff.git

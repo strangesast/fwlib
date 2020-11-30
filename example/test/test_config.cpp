@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" {
-#include "../src/config.h"
-}
 #include "gtest/gtest.h"
+extern "C" {
+  #include "../src/config.h"
+}
 
 TEST(Config, ConfigWorks) {
   const char *test_args[] = {"test_arg_config", "--ip=123.456.789.1",

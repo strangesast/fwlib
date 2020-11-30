@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 #include "gtest/gtest.h"
-#include "../src/config.c"
+extern "C" {
+  #include "../src/config.h"
+}
 
 TEST(Config, FileConfigWorks) {
   Config conf = {"0.0.0.0", 1234};

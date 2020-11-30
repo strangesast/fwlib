@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/config.c"
+#include "../src/config.h"
 #include "gtest/gtest.h"
 
 TEST(Config, DefaultConfigWorks) {

@@ -1,1 +1,4 @@
 libfwlib32.so*
+fanuc_example.exe
+libconfig.dll
+libconfig.lib
