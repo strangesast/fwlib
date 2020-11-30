@@ -21,7 +21,10 @@ jobs:
       # Some projects don't allow in-source building, so create a separate build directory
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{runner.workspace}}/example/build
-
+    - name: Log
+      run: |
+        ls ${{runner.workspace}}
+        ls ${{runner.workspace}}/example
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
