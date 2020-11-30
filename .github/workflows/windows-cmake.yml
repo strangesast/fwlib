@@ -1,9 +1,9 @@
-name: CMake
+name: Windows CMake
 
 on:
   push:
     paths:
-      - '.github/workflows/cmake.yml'
+      - '.github/workflows/windows-cmake.yml'
       - 'example/**'
 
 env:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -19,25 +19,27 @@ jobs:
     - name: Submodules & Dependencies
       run: |
         git submodule update --init --recursive
-        sudo apt update && sudo apt install -y libconfig-dev
-        sudo cp libfwlib32-linux-x64.so.1.0.5 /usr/local/lib/libfwlib32.so
-        sudo ldconfig
+        cd example/extern/libconfig
+        mkdir build
+        cd build
+        cmake -A Win32 ..
+        cmake --build . --config Release
 
     - name: Create Build Environment
-      shell: bash
+      shell: powershell
       run: cmake -E make_directory ${{runner.workspace}}/example/build
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/example/build
-      shell: bash
-      run: cmake $GITHUB_WORKSPACE/example -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      shell: powershell
+      run: cmake -A Win32 -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE $env:GITHUB_WORKSPACE/example
 
     - name: Build
       working-directory: ${{runner.workspace}}/example/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      shell: powershell
+      run: cmake --build . --config $env:BUILD_TYPE
 
     - name: Test
       working-directory: ${{runner.workspace}}/example/build
-      shell: bash
-      run: ctest -C $BUILD_TYPE -V
+      shell: powershell
+      run: ctest -V -C $env:BUILD_TYPE
