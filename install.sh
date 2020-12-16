@@ -14,22 +14,22 @@ if [ "$_set" = true ] && [ "$TARGETPLATFORM" = "aarch64" ] || [ "$_arch" = "aarc
     apt-get update && \
     apt-get install -y \
       libc6-dev:armhf \
-      libconfig-dev:armhf \
+      #  libconfig-dev:armhf \
       gcc-arm-linux-gnueabihf
   echo "/usr/arm-linux-gnueabihf/lib/" >> /etc/ld.so.conf
   arch=armv7
 
 elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/amd64" ] || [ "$_arch" = "x86_64" ]; then
-  apt-get update && apt-get install -y libconfig-dev
+  #  apt-get update && apt-get install -y libconfig-dev
   arch=x64
 
 elif [ "$_set" = true ] && [ "$TARGETPLATFORM" = "linux/arm/v7" ] || [ "$_arch" = "armhf" ] || [ "$_arch" = "armv7l" ]; then
+  #  apt-get update && apt-get install -y libconfig-dev
   arch=armv7
-  apt-get update && apt-get install -y libconfig-dev
 
 else
+  #  apt-get update && apt-get install -y libconfig-dev
   arch=x86
-  apt-get update && apt-get install -y libconfig-dev
 
 fi
 
