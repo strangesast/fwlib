@@ -2,7 +2,7 @@ from strangesast/fwlib as base
 
 from base as builder
 
-copy build-deps.sh /tmp/
+copy scripts/build-deps.sh /tmp/
 run /tmp/build-deps.sh
 
 workdir /usr/src/app
