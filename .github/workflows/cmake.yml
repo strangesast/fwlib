@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/cmake.yml'
-      - 'example/**'
+      - 'examples/c/**'
 
 env:
   BUILD_TYPE: Release
@@ -25,19 +25,19 @@ jobs:
 
     - name: Create Build Environment
       shell: bash
-      run: cmake -E make_directory ${{runner.workspace}}/example/build
+      run: cmake -E make_directory ${{runner.workspace}}/examples/c/build
 
     - name: Configure CMake
-      working-directory: ${{runner.workspace}}/example/build
+      working-directory: ${{runner.workspace}}/examples/c/build
       shell: bash
-      run: cmake $GITHUB_WORKSPACE/example -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE/examples/c -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
-      working-directory: ${{runner.workspace}}/example/build
+      working-directory: ${{runner.workspace}}/examples/c/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
     - name: Test
-      working-directory: ${{runner.workspace}}/example/build
+      working-directory: ${{runner.workspace}}/examples/c/build
       shell: bash
       run: ctest -C $BUILD_TYPE -V

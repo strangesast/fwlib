@@ -19,8 +19,8 @@ int retrieve_id(Config *conf, char *cnc_id) {
 #endif
 
   printf("connecting to machine at %s:%d...\n", conf->ip, conf->port);
-  if (cnc_allclibhndl3(conf->ip, conf->port, 10, &libh) != EW_OK) {
-    fprintf(stderr, "Failed to connect to cnc!\n");
+  if ((ret = cnc_allclibhndl3(conf->ip, conf->port, 10, &libh)) != EW_OK) {
+    fprintf(stderr, "Failed to connect to cnc! (%d)\n", ret);
     ret = 1;
     goto cleanup;
   }
