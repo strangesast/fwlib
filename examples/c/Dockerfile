@@ -7,7 +7,7 @@ run /tmp/build-deps.sh
 
 workdir /usr/src/app
 
-copy example/ .
+copy examples/c/ .
 
 run mkdir build && \
   cd build && \
