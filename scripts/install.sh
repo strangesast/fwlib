@@ -10,11 +10,11 @@ if [ -z "${TARGETPLATFORM}" ]; then _unset=false; fi
 
 if [ "$_set" = true ] && [ "$TARGETPLATFORM" = "aarch64" ] || [ "$_arch" = "aarch64" ]; then
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/arm-linux-gnueabihf/lib/
+  #  libconfig-dev:armhf \
   dpkg --add-architecture armhf && \
     apt-get update && \
     apt-get install -y \
       libc6-dev:armhf \
-      #  libconfig-dev:armhf \
       gcc-arm-linux-gnueabihf
   echo "/usr/arm-linux-gnueabihf/lib/" >> /etc/ld.so.conf
   arch=armv7
