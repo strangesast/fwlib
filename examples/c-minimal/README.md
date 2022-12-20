@@ -1,5 +1,11 @@
 # Instructions
 
+## Docker
+```
+docker build --platform=linux/arm/v7 -f examples/c-minimal/docker/armv7/Dockerfile .
+docker run --rm -it --platform=linux/amd64 $(docker build --platform=linux/amd64 -f examples/c-minimal/docker/x86/Dockerfile . -q)
+```
+
 ## Linux
 From the root of this repository:  
 ```

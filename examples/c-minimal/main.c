@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../fwlib32.h"
+#include "fwlib32.h"
 #define MACHINE_HOST "127.0.0.1"
 #define MACHINE_PORT 8193
 
