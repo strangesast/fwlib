@@ -36,7 +36,12 @@ if (WIN32)
       IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/extern/libconfig/build/out/Release/libconfig.lib"
       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/extern/libconfig/lib"
   )
+elseif()
+  find_library(config NAMES config REQUIRED)
+  message(STATUS "config: ${config}")
 endif()
+
+set(HEADER_FILES ${PROJECT_SOURCE_DIR}/fwlib32.h)
 
 add_subdirectory(src)
 
@@ -50,6 +55,8 @@ set_target_properties(fanuc_example
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+target_link_libraries(fanuc_example config)
 
 install (TARGETS fanuc_example
   RUNTIME DESTINATION bin

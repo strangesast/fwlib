@@ -22,10 +22,15 @@ if (WIN32)
   endforeach()
 else()
   find_library(FWLIB NAMES fwlib32 libfwlib32 HINTS "${CMAKE_SOURCE_DIR}/../../" REQUIRED)
-  add_library(fwlib32 SHARED IMPORTED)
+  add_library(fwlib32 SHARED IMPORTED "${CMAKE_SOURCE_DIR}")
+  #set_target_properties(fwlib32 PROPERTIES
+  #  IMPORTED_LOCATION "${FWLIB}"
+  #  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/../../")
+
   set_target_properties(fwlib32 PROPERTIES
     IMPORTED_LOCATION "${FWLIB}"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/../../")
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}")
+
   #if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   #  set_target_properties(fanuc_example PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
   #endif()
