@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "../../fwlib32.h"
-#define MACHINE_HOST "127.0.0.1"
+#define DEFAULT_MACHINE_HOST "127.0.0.1"
 #define MACHINE_PORT 8193
 
 int main(int argc, char *argv[]) {
@@ -13,6 +13,11 @@ int main(int argc, char *argv[]) {
   unsigned short libh;
   char cnc_id[40] = "";
   uint32_t cnc_ids[4];
+
+  const char *MACHINE_HOST = getenv("MACHINE_HOST");
+  if (MACHINE_HOST == NULL) {
+    MACHINE_HOST = DEFAULT_MACHINE_HOST;
+  }
 
 #ifndef _WIN32
   if (cnc_startupprocess(0, "focas.log") != EW_OK) {

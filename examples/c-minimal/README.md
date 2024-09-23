@@ -14,3 +14,8 @@ From the root of this repository:
 cl.exe /Fe"fanuc_minimal.exe" .\examples\c-minimal\main.c /link .\Fwlib32.lib
 .\fanuc_minimal.exe
 ```
+
+## Docker
+```
+docker run --network host -e MACHINE_HOST=host.docker.internal --rm --platform=linux/amd64 $(docker build --platform=linux/amd64 -f examples/c-minimal/Dockerfile -q .)
+```
