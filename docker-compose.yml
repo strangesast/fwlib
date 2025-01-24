@@ -1,15 +1,17 @@
 version: '3.7'
 services:
   fwlib:
+    platform: linux/amd64
     image: strangesast/fwlib
     build:
       context: .
       dockerfile: Dockerfile
   example:
+    platform: linux/amd64
     image: strangesast/fwlib-example
     network_mode: host
     build:
       context: .
-      dockerfile: example/Dockerfile
+      dockerfile: examples/c-minimal/Dockerfile
     depends_on:
       - fwlib
