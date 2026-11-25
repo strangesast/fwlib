@@ -12,7 +12,9 @@ int main(int argc, char *argv[]) {
   int ret = 0;
   unsigned short libh;
   char cnc_id[40] = "";
-  uint32_t cnc_ids[4];
+  /* FOCAS expects an array of 4 `unsigned long` (8 bytes each on 64-bit
+   * Linux); a uint32_t[4] buffer would be overrun there. */
+  unsigned long cnc_ids[4] = {0, 0, 0, 0};
 
   const char *MACHINE_HOST = getenv("MACHINE_HOST");
   if (MACHINE_HOST == NULL) {
@@ -34,14 +36,15 @@ int main(int argc, char *argv[]) {
   }
   allocated = 1;
 
-  if (cnc_rdcncid(libh, (unsigned long *)cnc_ids) != EW_OK) {
+  if (cnc_rdcncid(libh, cnc_ids) != EW_OK) {
     fprintf(stderr, "Failed to read cnc id!\n");
     ret = 1;
     goto cleanup;
   }
 
-  snprintf(cnc_id, 40, "%08x-%08x-%08x-%08x", cnc_ids[0], cnc_ids[1],
-           cnc_ids[2], cnc_ids[3]);
+  snprintf(cnc_id, sizeof(cnc_id), "%08x-%08x-%08x-%08x",
+           (uint32_t)cnc_ids[0], (uint32_t)cnc_ids[1], (uint32_t)cnc_ids[2],
+           (uint32_t)cnc_ids[3]);
 
 cleanup:
   if (allocated && cnc_freelibhndl(libh) != EW_OK)
@@ -50,5 +53,8 @@ cleanup:
   cnc_exitprocess();
 #endif
 
-  printf("machine id: %s\n", cnc_id);
+  if (ret == 0) {
+    printf("machine id: %s\n", cnc_id);
+  }
+  return ret;
 }
