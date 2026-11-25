@@ -1,5 +1,11 @@
 from strangesast/fwlib as base
 
+# the base image is Debian 10 "buster" (EOL): its packages moved to archive.debian.org
+run printf '%s\n' \
+    'deb http://archive.debian.org/debian buster main' \
+    'deb http://archive.debian.org/debian-security buster/updates main' \
+    > /etc/apt/sources.list
+
 from base as builder
 
 copy scripts/build-deps.sh /tmp/
