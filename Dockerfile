@@ -1,4 +1,4 @@
-ARG image=debian:buster-slim
+ARG image=debian:bookworm-slim
 FROM ${image}
 
 WORKDIR /tmp/

@@ -1,4 +1,4 @@
-from golang:bullseye as base
+from golang:bookworm as base
 
 workdir /tmp/
 copy libfwlib32* fwlib32.h scripts/install.sh ./
@@ -11,8 +11,13 @@ from base as builder
 
 copy . .
 
-# specific for building on aarch64 targeting armhf
-run cd examples/go && GOARCH=arm GOARM=7 CGO_ENABLED=1 GOOS=linux CC=arm-linux-gnueabihf-gcc go build -o fwlib_example .
+# on aarch64, cross-compile for armhf (there is no arm64 build of libfwlib32,
+# install.sh sets up the armhf toolchain); elsewhere, build natively
+run cd examples/go && \
+  if [ "$(arch)" = "aarch64" ]; then \
+    export GOARCH=arm GOARM=7 CC=arm-linux-gnueabihf-gcc; \
+  fi && \
+  CGO_ENABLED=1 GOOS=linux go build -o fwlib_example .
 
 from base
 
