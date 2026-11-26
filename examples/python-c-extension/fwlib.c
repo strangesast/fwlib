@@ -111,9 +111,10 @@ static void Context_dealloc(Context* self) {
 }
 
 static PyObject* Context_read_id(Context* self, PyObject* Py_UNUSED(ignored)) {
-    /* FOCAS expects an array of 4 `unsigned long` (8 bytes each on 64-bit
-     * Linux); a uint32_t[4] buffer would be overrun there. */
-    unsigned long cnc_ids[4] = {0, 0, 0, 0};
+    /* cnc_rdcncid writes four 32-bit words, whatever the `unsigned long *` in
+     * its prototype suggests (unsigned long is 8 bytes on 64-bit Linux, but the
+     * x64 library still stores 4-byte words): keep a uint32_t[4] buffer. */
+    uint32_t cnc_ids[4] = {0, 0, 0, 0};
     unsigned short libh = self->libh;
     char cnc_id[40] = "";
     int ret;
@@ -124,7 +125,7 @@ static PyObject* Context_read_id(Context* self, PyObject* Py_UNUSED(ignored)) {
     }
 
     Py_BEGIN_ALLOW_THREADS
-    ret = cnc_rdcncid(libh, cnc_ids);
+    ret = cnc_rdcncid(libh, (unsigned long*) cnc_ids);
     Py_END_ALLOW_THREADS
 
     if (ret != EW_OK) {
@@ -133,8 +134,7 @@ static PyObject* Context_read_id(Context* self, PyObject* Py_UNUSED(ignored)) {
     }
 
     snprintf(cnc_id, sizeof(cnc_id), "%08x-%08x-%08x-%08x",
-             (uint32_t) cnc_ids[0], (uint32_t) cnc_ids[1],
-             (uint32_t) cnc_ids[2], (uint32_t) cnc_ids[3]);
+             cnc_ids[0], cnc_ids[1], cnc_ids[2], cnc_ids[3]);
 
     return PyUnicode_FromString(cnc_id);
 }

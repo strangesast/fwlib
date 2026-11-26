@@ -1,5 +1,8 @@
 #define TESTING 1
 
+#include <cstdint>
+#include <cstring>
+
 extern "C" {
   #include "../src/config.h"
   #include "../src/util.c"
@@ -77,4 +80,31 @@ TEST(Util, UtilWorks) {
 #ifndef _WIN32
   ASSERT_EQ(cnc_exitprocess_fake.call_count, 1);
 #endif
+}
+
+/*
+ * Behaves like the bundled libfwlib32-linux-x64.so.1.0.5: whatever the
+ * `unsigned long *` prototype says, cnc_rdcncid stores four 32-bit words
+ * (4-byte stores, 4-byte stride). Read back through a buffer of 4 unsigned
+ * long (8 bytes each on 64-bit Linux), these words would give
+ * 11111111-33333333-00000000-00000000.
+ */
+static short rdcncid_writes_32bit_words(unsigned short, unsigned long *ids) {
+  const uint32_t words[4] = {0x11111111, 0x22222222, 0x33333333, 0x44444444};
+  memcpy(ids, words, sizeof(words));
+  return EW_OK;
+}
+
+TEST(Util, ReadsAllFourIdWords) {
+  RESET_FAKE(cnc_allclibhndl3);
+  RESET_FAKE(cnc_rdcncid);
+  RESET_FAKE(cnc_freelibhndl);
+  cnc_rdcncid_fake.custom_fake = rdcncid_writes_32bit_words;
+
+  char id[CNC_ID_SIZE];
+  Config c = {"1.2.3.4", 1234};
+
+  ASSERT_EQ(retrieve_id(&c, id), 0);
+  ASSERT_EQ(cnc_rdcncid_fake.call_count, 1);
+  EXPECT_STREQ(id, "11111111-22222222-33333333-44444444");
 }

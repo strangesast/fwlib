@@ -33,7 +33,9 @@ def load_focas():
     focas.cnc_allclibhndl3.restype = ctypes.c_short
     focas.cnc_freelibhndl.argtypes = [ctypes.c_ushort]
     focas.cnc_freelibhndl.restype = ctypes.c_short
-    focas.cnc_rdcncid.argtypes = [ctypes.c_ushort, ctypes.POINTER(ctypes.c_ulong)]
+    # the C prototype says `unsigned long *`, but the library writes 32-bit
+    # words (see read_machine_id)
+    focas.cnc_rdcncid.argtypes = [ctypes.c_ushort, ctypes.POINTER(ctypes.c_uint32)]
     focas.cnc_rdcncid.restype = ctypes.c_short
     return focas
 
@@ -48,13 +50,14 @@ def read_machine_id(focas, ip, port, timeout=10):
         if ret != EW_OK:
             raise FocasError(f"failed to connect to {ip}:{port} ({ret})")
         try:
-            # FOCAS expects 4 `unsigned long` (8 bytes each on 64-bit Linux);
-            # a c_uint32 array would be overrun there.
-            cnc_ids = (ctypes.c_ulong * 4)()
+            # cnc_rdcncid writes four 32-bit words, whatever the `unsigned long *`
+            # in its prototype suggests (c_ulong is 8 bytes on 64-bit Linux, but
+            # the x64 library still stores 4-byte words): keep a c_uint32 array.
+            cnc_ids = (ctypes.c_uint32 * 4)()
             ret = focas.cnc_rdcncid(libh, cnc_ids)
             if ret != EW_OK:
                 raise FocasError(f"failed to read cnc id ({ret})")
-            return "-".join(f"{v & 0xFFFFFFFF:08x}" for v in cnc_ids)
+            return "-".join(f"{v:08x}" for v in cnc_ids)
         finally:
             ret = focas.cnc_freelibhndl(libh)
             if ret != EW_OK:

@@ -63,15 +63,16 @@ func run() int {
 		}
 	}()
 
-	// FOCAS expects an array of 4 `unsigned long` (8 bytes each on 64-bit
-	// Linux); a [4]uint32 would be overrun there, corrupting Go memory.
-	var cncIDs [4]C.ulong
-	if ret := C.cnc_rdcncid(libh, &cncIDs[0]); ret != C.EW_OK {
+	// cnc_rdcncid writes four 32-bit words, whatever the `unsigned long *` in
+	// its prototype suggests (C.ulong is 8 bytes on 64-bit Linux, but the x64
+	// library still stores 4-byte words): keep a [4]uint32 buffer.
+	var cncIDs [4]uint32
+	if ret := C.cnc_rdcncid(libh, (*C.ulong)(unsafe.Pointer(&cncIDs[0]))); ret != C.EW_OK {
 		fmt.Fprintf(os.Stderr, "cnc_rdcncid failed (%d)\n", ret)
 		return 1
 	}
 	machineID := fmt.Sprintf("%08x-%08x-%08x-%08x",
-		uint32(cncIDs[0]), uint32(cncIDs[1]), uint32(cncIDs[2]), uint32(cncIDs[3]))
+		cncIDs[0], cncIDs[1], cncIDs[2], cncIDs[3])
 
 	fmt.Printf("machine_id: %s\n", machineID)
 	return 0
