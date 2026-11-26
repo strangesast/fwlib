@@ -7,7 +7,7 @@
 #include "fwlib32.h"
 
 int main(int argc, char *argv[]) {
-  char cncID[36];
+  char cncID[CNC_ID_SIZE];
   Config conf;
 
   if (read_config(argc, argv, &conf)) {

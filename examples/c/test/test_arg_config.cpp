@@ -32,5 +32,21 @@ TEST(Config, ArgConfigWorks) {
 
   EXPECT_STREQ(conf.ip, INIT_VALUE.ip) << "ip should be unmodified";
   EXPECT_EQ(conf.port, INIT_VALUE.port) << "port should be unmodified";
+
+  // test short options (previously crashed: optarg was NULL)
+  optind = 1;
+  conf = INIT_VALUE;
+  const char *test_args_3[] = {"test_arg_config", "-p", "65535", "-h", "3.4.5.6"};
+  ASSERT_EQ(read_arg_config(5, (char **)test_args_3, &conf), 0) << "short options failed";
+
+  EXPECT_STREQ(conf.ip, "3.4.5.6") << "ip not set correctly";
+  EXPECT_EQ(conf.port, 65535) << "port 65535 should be accepted";
+
+  // test out-of-range port
+  optind = 1;
+  conf = INIT_VALUE;
+  const char *test_args_4[] = {"test_arg_config", "--port=65536"};
+  ASSERT_NE(read_arg_config(2, (char **)test_args_4, &conf), 0) << "port 65536 should be rejected";
+  EXPECT_EQ(conf.port, INIT_VALUE.port) << "port should be unmodified";
 #endif
 }

@@ -37,7 +37,7 @@ int read_arg_config(int argc, char *argv[], Config *conf) {
       fprintf(stderr, "unrecognized argument: \"%s\"\n", arg);
       return 1;
     }
-    for (char *c = arg+l; *c != '\0' && j < 100; j++, c++) {
+    for (char *c = arg+l; *c != '\0' && j < (int)sizeof(v) - 1; j++, c++) {
       v[j] = *c;
     }
     v[j] = '\0';
@@ -85,7 +85,7 @@ int read_arg_config(int argc, char *argv[], Config *conf) {
   bool ip_flag = false;
   char ip[100] = "";
 
-  while ((c = getopt_long(argc, argv, "hpc", options, &i)) != -1) {
+  while ((c = getopt_long(argc, argv, "h:p:c:", options, &i)) != -1) {
     switch (c) {
       case 'h':
         ip_flag = true;
@@ -93,7 +93,7 @@ int read_arg_config(int argc, char *argv[], Config *conf) {
         break;
 
       case 'p':
-        if ((tmp = atoi(optarg)) != 0 && tmp > 0 && tmp < 65535) {
+        if ((tmp = atoi(optarg)) > 0 && tmp <= 65535) {
           port = tmp;
         } else {
           fprintf(stderr, "invalid port: \"%s\"\n", optarg);
@@ -126,20 +126,21 @@ int read_arg_config(int argc, char *argv[], Config *conf) {
 #ifdef _WIN32
 int read_env_config(Config *conf) {
   int iTmp;
-  char buf[100] = "";
-  char *pTmp = (char *)buf;
+  char *pTmp = NULL;
   size_t n;
 
-  n = 100;
   if (_dupenv_s(&pTmp, &n, "DEVICE_IP") == 0 && pTmp != NULL) {
     snprintf(conf->ip, 100, "%s", pTmp);
   }
-  n = 100;
+  free(pTmp);
+  pTmp = NULL;
+
   if (_dupenv_s(&pTmp, &n, "DEVICE_PORT") == 0 && pTmp != NULL) {
-    if ((iTmp = atoi(pTmp)) > 0 && iTmp < 65535) {
+    if ((iTmp = atoi(pTmp)) > 0 && iTmp <= 65535) {
       conf->port = iTmp;
     }
   }
+  free(pTmp);
 
   return 0;
 }
@@ -152,7 +153,8 @@ int read_env_config(Config *conf) {
     snprintf(conf->ip, 100, "%s", pTmp);
   }
 
-  if (((pTmp = getenv("DEVICE_PORT")) != NULL) && (iTmp = atoi(pTmp)) > 0) {
+  if (((pTmp = getenv("DEVICE_PORT")) != NULL) && (iTmp = atoi(pTmp)) > 0 &&
+      iTmp <= 65535) {
     conf->port = iTmp;
   }
 
@@ -165,6 +167,7 @@ int read_file_config(const char *cfg_file, Config *conf) {
 
   config_init(&cfg);
   const char *tmp;
+  int port;
 
   if (config_read_file(&cfg, cfg_file) != CONFIG_TRUE) {
     fprintf(stderr, "unable to read config file \"%s\"\n", cfg_file);
@@ -175,7 +178,15 @@ int read_file_config(const char *cfg_file, Config *conf) {
   if (config_lookup_string(&cfg, "ip", &tmp) == CONFIG_TRUE) {
     snprintf(conf->ip, 100, "%s", tmp);
   }
-  config_lookup_int(&cfg, "port", &conf->port);
+  if (config_lookup_int(&cfg, "port", &port) == CONFIG_TRUE) {
+    if (port < 1 || port > 65535) {
+      fprintf(stderr, "invalid port in config file \"%s\": %d\n", cfg_file,
+              port);
+      config_destroy(&cfg);
+      return 1;
+    }
+    conf->port = port;
+  }
 
   config_destroy(&cfg);
 

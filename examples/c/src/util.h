@@ -18,5 +18,9 @@ short cnc_allclibhndl3(const char *, unsigned short, long, unsigned short *);
 short cnc_freelibhndl(unsigned short);
 #endif
 
+/* "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx" + '\0' */
+#define CNC_ID_SIZE 36
+
+/* cnc_id must point to a buffer of at least CNC_ID_SIZE bytes */
 int retrieve_id(Config *, char *);
 #endif

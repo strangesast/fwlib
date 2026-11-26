@@ -9,7 +9,10 @@ int retrieve_id(Config *conf, char *cnc_id) {
   int allocated = 0;
   int ret = 0;
   unsigned short libh;
-  uint32_t cnc_ids[4];
+  /* cnc_rdcncid writes four 32-bit words, whatever the `unsigned long *` in
+   * its prototype suggests (unsigned long is 8 bytes on 64-bit Linux, but the
+   * x64 library still stores 4-byte words): keep a uint32_t[4] buffer. */
+  uint32_t cnc_ids[4] = {0, 0, 0, 0};
 
 #ifndef _WIN32
   if (cnc_startupprocess(0, "focas.log") != EW_OK) {
@@ -32,8 +35,8 @@ int retrieve_id(Config *conf, char *cnc_id) {
     goto cleanup;
   }
 
-  snprintf(cnc_id, 40, "%08x-%08x-%08x-%08x", cnc_ids[0], cnc_ids[1],
-           cnc_ids[2], cnc_ids[3]);
+  snprintf(cnc_id, CNC_ID_SIZE, "%08x-%08x-%08x-%08x", cnc_ids[0],
+           cnc_ids[1], cnc_ids[2], cnc_ids[3]);
 
 cleanup:
   if (allocated && cnc_freelibhndl(libh) != EW_OK)
