@@ -1,10 +1,13 @@
 from strangesast/fwlib as base
 
-# the base image is Debian 10 "buster" (EOL): its packages moved to archive.debian.org
-run printf '%s\n' \
-    'deb http://archive.debian.org/debian buster main' \
-    'deb http://archive.debian.org/debian-security buster/updates main' \
-    > /etc/apt/sources.list
+# the strangesast/fwlib image on Docker Hub is still Debian 10 "buster" (EOL):
+# its packages moved to archive.debian.org. Newer bases are left untouched.
+run if grep -q '^10\.' /etc/debian_version; then \
+      printf '%s\n' \
+        'deb http://archive.debian.org/debian buster main' \
+        'deb http://archive.debian.org/debian-security buster/updates main' \
+        > /etc/apt/sources.list; \
+    fi
 
 from base as builder
 

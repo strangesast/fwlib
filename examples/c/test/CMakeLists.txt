@@ -1,5 +1,11 @@
 include(CMakeParseArguments)
 
+# the bundled googletest builds with -Werror; GCC 12+ reports a false positive
+# (maybe-uninitialized in gtest-death-test.cc) that must not fail the build
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=maybe-uninitialized")
+endif()
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 
 # cache cleanliness
