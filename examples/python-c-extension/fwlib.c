@@ -5,6 +5,16 @@
 #define MACHINE_PORT_DEFAULT 8193
 #define TIMEOUT_DEFAULT 10
 
+/*
+ * Every FOCAS call below is made while holding the GIL, on purpose: a call
+ * can then never overlap another call on the same Context. If read_id
+ * released the GIL around cnc_rdcncid, another thread could run __exit__ or
+ * __init__ on that Context meanwhile, freeing the handle (and possibly calling
+ * cnc_exitprocess) while the read is still using it. The cost is that a
+ * blocking call (a connection attempt waits up to `timeout` seconds) stalls
+ * every Python thread; use one process per machine if that matters.
+ */
+
 typedef struct {
     PyObject_HEAD
     unsigned short libh;
@@ -89,10 +99,8 @@ static int Context_init(Context* self, PyObject* args, PyObject* kwds) {
     }
     self->started = 1;
 
-    /* connecting can block for up to `timeout` seconds: let other threads run */
-    Py_BEGIN_ALLOW_THREADS
+    /* blocks for up to `timeout` seconds, GIL held (see the top of this file) */
     ret = cnc_allclibhndl3(host, (unsigned short) port, timeout, &libh);
-    Py_END_ALLOW_THREADS
 
     if (ret != EW_OK) {
         Context_close(self);
@@ -115,7 +123,6 @@ static PyObject* Context_read_id(Context* self, PyObject* Py_UNUSED(ignored)) {
      * its prototype suggests (unsigned long is 8 bytes on 64-bit Linux, but the
      * x64 library still stores 4-byte words): keep a uint32_t[4] buffer. */
     uint32_t cnc_ids[4] = {0, 0, 0, 0};
-    unsigned short libh = self->libh;
     char cnc_id[40] = "";
     int ret;
 
@@ -124,9 +131,8 @@ static PyObject* Context_read_id(Context* self, PyObject* Py_UNUSED(ignored)) {
         return NULL;
     }
 
-    Py_BEGIN_ALLOW_THREADS
-    ret = cnc_rdcncid(libh, (unsigned long*) cnc_ids);
-    Py_END_ALLOW_THREADS
+    /* GIL held: the Context cannot be closed during the read (see top of file) */
+    ret = cnc_rdcncid(self->libh, (unsigned long*) cnc_ids);
 
     if (ret != EW_OK) {
         PyErr_Format(PyExc_RuntimeError, "Failed to read CNC ID: %d", ret);

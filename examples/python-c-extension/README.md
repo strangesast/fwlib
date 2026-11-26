@@ -11,7 +11,7 @@ with Context(host="192.168.1.10", port=8193, timeout=10) as cnc:
 
 - `Context(host="127.0.0.1", port=8193, timeout=10)` connects to the machine; raises `ConnectionError` on failure, `ValueError` on an invalid port or timeout.
 - `read_id()` returns the CNC ID as a string; raises `RuntimeError` if the context is closed.
-- Leaving the `with` block (or deleting the object) closes the connection. Several contexts can be open at the same time, from several threads: blocking FOCAS calls release the GIL.
+- Leaving the `with` block (or deleting the object) closes the connection. Several contexts can be open at the same time. FOCAS calls keep the GIL, so a context can be shared between threads (it cannot be closed in the middle of a read), but a blocking call such as connecting stalls every Python thread.
 
 ## Docker
 
@@ -22,3 +22,11 @@ docker run --rm -it --platform=linux/amd64 -e MACHINE_IP=<device ip> $(docker bu
 ```
 
 `main.py` reads `MACHINE_IP` (default `host.docker.internal`, i.e. the Docker host with Docker Desktop) and `MACHINE_PORT` (default `8193`), and exits with code `1` on error.
+
+## Tests
+
+`tests/test_lifecycle.py` checks, against a stub of the library (`tests/stub_fwlib.c`, no CNC needed), that `read_id()` returns all four ID words and that closing or re-initialising a context from another thread does not free it in the middle of a read:
+
+```
+docker build --platform=linux/amd64 --target test -f examples/python-c-extension/Dockerfile .
+```
